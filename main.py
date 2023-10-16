@@ -33,7 +33,7 @@ def portselector():
     layout = [
         [sg.Text("Chọn cổng COM đến ESP32: ", background_color='#eeeeee', text_color='#000')],
         [sg.Combo(values=portlist, expand_x=True, background_color='#eeeeee', text_color='#000', button_background_color='#eeeeee', button_arrow_color="#000")],
-        [sg.Submit(button_text="Kết nối", button_color=('#fff', '#000'))]
+        [sg.Submit(button_text="Kết nối", button_color=('#fff', '#000'), tooltip="pmeicute")]
     ]
     win = sg.Window("Chọn cổng COM", layout, finalize=True, background_color='#eeeeee', font=("Arial", 10))
     e, v = win.read()
