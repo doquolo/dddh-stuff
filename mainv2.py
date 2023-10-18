@@ -62,11 +62,11 @@ def portselector():
     # print(portlist)
 
     layout = [
-        [sg.Text("Chọn cổng COM đến ESP32: ", background_color='#eeeeee', text_color='#000')],
+        [sg.Text("Chọn thiết bị đo: ", background_color='#eeeeee', text_color='#000')],
         [sg.Combo(values=portlist, expand_x=True, background_color='#eeeeee', text_color='#000', button_background_color='#eeeeee', button_arrow_color="#000")],
         [sg.Submit(button_text="Kết nối", button_color=('#fff', '#000'))]
     ]
-    win = sg.Window("Chọn cổng COM", layout, finalize=True, background_color='#eeeeee', font=("Arial", 10))
+    win = sg.Window("Chọn cổng COM", layout, finalize=True, background_color='#eeeeee', font=("Arial", 10), icon="ruler.ico")
     e, v = win.read()
     win.close()
 
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         [sg.StatusBar("Chờ kết nối...", key="-status-", expand_x=True, background_color="#fff", text_color="#000", relief=sg.RELIEF_FLAT, pad=(0, 0), size=(10,1))]
     ]
 
-    window = sg.Window(f'OscView', layout, background_color='#ffffff')
+    window = sg.Window(f'OscView', layout, background_color='#ffffff', icon="ruler.ico")
     # create daemon
     x_out = mf.Queue()
     y_out = mf.Queue()
@@ -173,7 +173,7 @@ if __name__ == "__main__":
             break
 
         if event == "Tạo mới":
-            choice = sg.popup_ok_cancel("Tạo mới đồ thị sẽ xoá hết dữ liệu đồ thị cũ. \nBạn có muốn tiếp tục?", title="Xác nhận!", button_color="#000", background_color="#fff", text_color="#000")
+            choice = sg.popup_ok_cancel("Tạo mới đồ thị sẽ xoá hết dữ liệu đồ thị cũ. \nBạn có muốn tiếp tục?", title="Xác nhận!", button_color="#000", background_color="#fff", text_color="#000", icon="ruler.ico")
             if (choice == "OK"): x, y, start_time = [], [], time.time()
 
         if event == "Xuất đồ thị...":
@@ -190,7 +190,7 @@ if __name__ == "__main__":
                     sg.Button("Chọn", key="Submit", button_color=('#fff', '#000'))
                 ]
             ]
-            exp_win = sg.Window("Xuất đồ thị", layout, finalize=True, background_color='#eeeeee')
+            exp_win = sg.Window("Xuất đồ thị", layout, finalize=True, background_color='#eeeeee', icon="ruler.ico")
             while True:
                 event, values = exp_win.read()
                 if event == sg.WIN_CLOSED or event=="Exit":
