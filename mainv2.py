@@ -106,7 +106,7 @@ def update(x_out, y_out, currentSerial):
                 print(e)
                 
 
-# Embedding the Matplotlib toolbar into your application
+#  Embedding the Matplotlib toolbar into your application
 def draw_figure_w_toolbar(canvas, fig):
     if canvas.children:
         for child in canvas.winfo_children():
@@ -114,6 +114,7 @@ def draw_figure_w_toolbar(canvas, fig):
     figure_canvas_agg = FigureCanvasTkAgg(fig, master=canvas)
     figure_canvas_agg.draw()
     figure_canvas_agg.get_tk_widget().pack(side='right', fill='both', expand=1)
+    return figure_canvas_agg.copy_from_bbox(ax.bbox)
 
 if __name__ == "__main__":
     # create gui
@@ -129,7 +130,7 @@ if __name__ == "__main__":
         [sg.StatusBar("Chờ kết nối...", key="-status-", expand_x=True, background_color="#fff", text_color="#000", relief=sg.RELIEF_FLAT, pad=(0, 0), size=(10,1))]
     ]
 
-    window = sg.Window(f'OscView', layout, background_color='#ffffff', icon="ruler.ico")
+    window = sg.Window(f'OscView', layout, background_color='#ffffff', icon="ruler.ico", finalize=True)
     # create daemon
     x_out = mf.Queue()
     y_out = mf.Queue()
@@ -151,13 +152,13 @@ if __name__ == "__main__":
     ax.set_xlabel("Thời gian (ms)")
     ax.set_ylabel("Li độ (cm)")
 
-    # Create a Line2D object for the line plot
-    line = Line2D([], [], color='b')
-    ax.add_line(line)
+    # Create a scatter object for the plot
+    scat = ax.scatter([], [], color='b', s=20)
+    ax.plot()
 
     fig.canvas.draw()
     # cache the background
-    axbackground = fig.canvas.copy_from_bbox(ax.bbox)
+    axbackground = draw_figure_w_toolbar(window['fig_cv'].TKCanvas, fig)
 
     # Global variables
     max_data_points = 500  # Maximum number of data points to display
@@ -217,22 +218,24 @@ if __name__ == "__main__":
 
         # trim data to only 1000 sample onscreen
         if (len(x) > max_data_points):
-            x_stripped = x[-max_data_points:]
-            y_stripped = y[-max_data_points:]
-            # Update the Line2D object with the new stripped data
-            line.set_data(x_stripped, y_stripped)
-        else:
-            # Update the Line2D object with the new data
-            line.set_data(x, y)
+            x = x[-max_data_points:]
+            y = y[-max_data_points:]
+            # Determine the axis limits based on your data
+            x_min = min(x)
+            x_max = max(x)
+            # Calculate some padding to make the data span the plot area nicely
+            x_padding = (x_max - x_min) * 0.1  # 10% padding on both sides
+            # Set the axis limits to span the data with padding
+            ax.set_xlim(x_min - x_padding, x_max + x_padding)
 
         # print(len(x), " ", len(y))
         
-        # auto adjust plot view + draw
-        ax.autoscale()
-        ax.relim()
+        # auto adjust plot view + update
+        scat = ax.scatter(x, y, color='b', s=20)
         fig.canvas.restore_region(axbackground)
-        ax.draw_artist(line)
-        draw_figure_w_toolbar(window['fig_cv'].TKCanvas, fig)
+        ax.draw_artist(scat)
+        fig.canvas.blit(ax.bbox)
+        fig.canvas.flush_events()
 
     window.close()
     p.kill()
