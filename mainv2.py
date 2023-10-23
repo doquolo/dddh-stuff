@@ -18,8 +18,7 @@ import serial
 import serial.tools.list_ports
 
 # excel
-from openpyxl.styles import Color, PatternFill, Font, Border
-from openpyxl.styles import colors
+from openpyxl.styles import Color, PatternFill, Font, Border, colors
 from openpyxl.cell import Cell
 from openpyxl import Workbook
 
