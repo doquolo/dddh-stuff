@@ -120,7 +120,7 @@ if __name__ == "__main__":
     # create gui
     menu = [
         ['&Tệp', ['&Xuất đồ thị...', '&Thoát']],
-        ['&Đồ thị', ['&Tạo mới']],
+        ['&Đồ thị', ['&Tạo mới', '&Thiết lập']],
         ['&Trợ giúp', ['&Thông tin']],
     ]
 
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     axbackground = draw_figure_w_toolbar(window['fig_cv'].TKCanvas, fig)
 
     # Global variables
-    max_data_points = 500  # Maximum number of data points to display
+    max_data_points = 1000  # Maximum number of data points to display
     x = []
     y = []
 
@@ -172,6 +172,24 @@ if __name__ == "__main__":
 
         if event == sg.WIN_CLOSED or event == "Thoát":
             break
+
+        if event == "Thiết lập":
+            layout = [
+                [
+                    sg.Text("Số lượng mẫu hiện thị: ", background_color='#eeeeee', text_color='#000'), 
+                    sg.Input(key="-sampleNum-", default_text=max_data_points, background_color='#fff', text_color='#000', border_width=0), 
+                ],
+                [
+                    sg.Button("Lưu cài đặt", key="Submit", button_color=('#fff', '#000'), bind_return_key=True)
+                ]
+            ]
+            win = sg.Window("Xuất đồ thị", layout, finalize=True, background_color='#eeeeee', icon="ruler.ico")
+            e, v = win.read()
+            if e == "Submit":
+                max_data_points = int(v["-sampleNum-"])
+                sg.Popup("Đã lưu thiết lập", title = "Thông báo!", button_color="#000", background_color="#fff", text_color="#000", icon="ruler.ico")
+                win.close()
+
 
         if event == "Tạo mới":
             choice = sg.popup_ok_cancel("Tạo mới đồ thị sẽ xoá hết dữ liệu đồ thị cũ. \nBạn có muốn tiếp tục?", title="Xác nhận!", button_color="#000", background_color="#fff", text_color="#000", icon="ruler.ico")
@@ -216,7 +234,7 @@ if __name__ == "__main__":
             x.append(x_out.get())
             y.append(y_out.get())
 
-        # trim data to only 1000 sample onscreen
+        # trim data to only a predefined number of samples onscreen
         if (len(x) > max_data_points):
             x = x[-max_data_points:]
             y = y[-max_data_points:]
