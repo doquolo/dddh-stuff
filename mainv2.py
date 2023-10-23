@@ -66,7 +66,7 @@ def portselector():
         [sg.Combo(values=portlist, expand_x=True, background_color='#eeeeee', text_color='#000', button_background_color='#eeeeee', button_arrow_color="#000")],
         [sg.Submit(button_text="Kết nối", button_color=('#fff', '#000'))]
     ]
-    win = sg.Window("Chọn cổng COM", layout, finalize=True, background_color='#eeeeee', font=("Arial", 10), icon="ruler.ico")
+    win = sg.Window("Chọn cổng COM", layout, finalize=True, background_color='#eeeeee', font=("Arial", 10), icon="ruler.ico", keep_on_top=True)
     e, v = win.read()
     win.close()
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     layout = [
         [sg.Menu(menu, tearoff=False, key='-menu-')],
         [sg.Canvas(key='fig_cv', size=(500 * 2, 700))],
-        [sg.StatusBar("Chờ kết nối...", key="-status-", expand_x=True, background_color="#fff", text_color="#000", relief=sg.RELIEF_FLAT, pad=(0, 0), size=(10,1))]
+        [sg.StatusBar("Chờ kết nối...", key="-status-", expand_x=True, background_color="#fff", text_color="#000", relief=sg.RELIEF_FLAT, pad=(0, 0), size=(10,1))],
     ]
 
     window = sg.Window(f'OscView', layout, background_color='#ffffff', icon="ruler.ico", finalize=True)
@@ -230,26 +230,34 @@ if __name__ == "__main__":
             window.TKroot.title(f"OscView - {ser_desc}")
             start_time = time.time()
         while not x_out.empty():
-            window["-status-"].update(f"Điểm dữ liệu đã thu thập: x-{len(x)}, y-{len(y)} | Thời gian đã trôi qua: {int(time.time() - start_time)} (s)")
+            window["-status-"].update(f"Điểm dữ liệu đã thu thập: x-{len(x)}, y-{len(y)} | Số lượng điểm dữ liệu hiển thị: {max_data_points} | Thời gian đã trôi qua: {int(time.time() - start_time)} (s)")
             x.append(x_out.get())
             y.append(y_out.get())
 
         # trim data to only a predefined number of samples onscreen
         if (len(x) > max_data_points):
-            x = x[-max_data_points:]
-            y = y[-max_data_points:]
+            x_stripped = x[-max_data_points:]
+            y_stripped = y[-max_data_points:]
             # Determine the axis limits based on your data
-            x_min = min(x)
-            x_max = max(x)
+            x_min = min(x_stripped)
+            x_max = max(x_stripped)
             # Calculate some padding to make the data span the plot area nicely
             x_padding = (x_max - x_min) * 0.1  # 10% padding on both sides
             # Set the axis limits to span the data with padding
             ax.set_xlim(x_min - x_padding, x_max + x_padding)
-
-        # print(len(x), " ", len(y))
+            scat = ax.scatter(x_stripped, y_stripped, color='b', s=20)
+        else:
+            if (len(x) != 0):
+                # Determine the axis limits based on your data
+                x_min = min(x)
+                x_max = max(x)
+                # Calculate some padding to make the data span the plot area nicely
+                x_padding = (x_max - x_min) * 0.1  # 10% padding on both sides
+                # Set the axis limits to span the data with padding
+                ax.set_xlim(x_min - x_padding, x_max + x_padding)
+            scat = ax.scatter(x, y, color='b', s=20)
         
         # auto adjust plot view + update
-        scat = ax.scatter(x, y, color='b', s=20)
         fig.canvas.restore_region(axbackground)
         ax.draw_artist(scat)
         fig.canvas.blit(ax.bbox)
