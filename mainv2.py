@@ -12,6 +12,7 @@ from matplotlib.lines import Line2D
 
 # mf
 import multiprocessing as mf
+from multiprocessing import freeze_support
 
 # serial
 import serial
@@ -107,7 +108,7 @@ def update(x_out, y_out, currentSerial):
                 
 
 #  Embedding the Matplotlib toolbar into your application
-def draw_figure_w_toolbar(canvas, fig):
+def draw_figure_w_toolbar(canvas, fig, ax):
     if canvas.children:
         for child in canvas.winfo_children():
             child.destroy()
@@ -116,7 +117,9 @@ def draw_figure_w_toolbar(canvas, fig):
     figure_canvas_agg.get_tk_widget().pack(side='right', fill='both', expand=1)
     return figure_canvas_agg.copy_from_bbox(ax.bbox)
 
-if __name__ == "__main__":
+def main():
+    # crucial for freezing
+    freeze_support()
     # create gui
     menu = [
         ['&Tệp', ['&Xuất đồ thị...', '&Thoát']],
@@ -158,7 +161,7 @@ if __name__ == "__main__":
 
     fig.canvas.draw()
     # cache the background
-    axbackground = draw_figure_w_toolbar(window['fig_cv'].TKCanvas, fig)
+    axbackground = draw_figure_w_toolbar(window['fig_cv'].TKCanvas, fig, ax)
 
     # Global variables
     max_data_points = 1000  # Maximum number of data points to display
