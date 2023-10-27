@@ -133,22 +133,22 @@ def main():
         [sg.StatusBar("Chờ kết nối...", key="-status-", expand_x=True, background_color="#fff", text_color="#000", relief=sg.RELIEF_FLAT, pad=(0, 0), size=(10,1))],
     ]
 
-    window = sg.Window(f'OscView', layout, background_color='#ffffff', icon="ruler.ico", finalize=True)
+    window = sg.Window(f'OscView', layout, background_color='#ffffff', icon="ruler.ico", finalize=True, resizable=True)
+    window.bind('<Configure>',"resize")
+    prev_size = window.size
     # create daemon
     x_out = mf.Queue()
     y_out = mf.Queue()
     currentSerial = mf.Queue()
     ctx = mf.get_context('spawn')
-    q = ctx.Queue()
     p = ctx.Process(target=update, args=(x_out, y_out, currentSerial, ))
     p.start()
 
-    
     # Instantiate Matplotlib figure and axis
     fig = plt.figure()
     ax = fig.add_subplot(111)
     DPI = fig.get_dpi()
-    fig.set_size_inches(505 * 2 / float(DPI), 707 / float(DPI))
+    fig.set_size_inches((window.size[0]) / float(DPI), (window.size[1]) / float(DPI))
 
     # legends
     ax.set_title("Đồ thị giao động")
@@ -175,6 +175,10 @@ def main():
 
         if event == sg.WIN_CLOSED or event == "Thoát":
             break
+
+        if event == "resize":
+            if (prev_size != window.size):
+                prev_size = window.size
 
         if event == "Thiết lập":
             layout = [
