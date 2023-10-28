@@ -129,13 +129,11 @@ def main():
 
     layout = [
         [sg.Menu(menu, tearoff=False, key='-menu-')],
-        [sg.Canvas(key='fig_cv', size=(500 * 2, 700))],
+        [sg.Canvas(key='fig_cv', expand_x = True, expand_y = True)],
         [sg.StatusBar("Chờ kết nối...", key="-status-", expand_x=True, background_color="#fff", text_color="#000", relief=sg.RELIEF_FLAT, pad=(0, 0), size=(10,1))],
     ]
 
     window = sg.Window(f'OscView', layout, background_color='#ffffff', icon="ruler.ico", finalize=True, resizable=True)
-    window.bind('<Configure>',"resize")
-    prev_size = window.size
     # create daemon
     x_out = mf.Queue()
     y_out = mf.Queue()
@@ -175,10 +173,6 @@ def main():
 
         if event == sg.WIN_CLOSED or event == "Thoát":
             break
-
-        if event == "resize":
-            if (prev_size != window.size):
-                prev_size = window.size
 
         if event == "Thiết lập":
             layout = [
